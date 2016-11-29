@@ -14,7 +14,8 @@ require_relative '../models/address_book'
      puts "2 - Create an entry"
      puts "3 - Search for an entry"
      puts "4 - Import entries from a CSV"
-     puts "5 - Exit"
+     puts "5 - View entry by number(position in the address book)"
+     puts "6 - Exit"
      print "Enter your selection: "
 
 
@@ -37,6 +38,10 @@ require_relative '../models/address_book'
          read_csv
          main_menu
       when 5
+         system "clear"
+         select_by_index
+         main_menu
+      when 6
          puts "Good-bye!"
          exit(0)
 
@@ -79,7 +84,21 @@ require_relative '../models/address_book'
 
   def read_csv
   end
-
+  def select_by_index
+    puts "Please select the number of the entry you would like to view.\nThere are currently #{@address_book.entries.count} entries.\nPlease input a NUMBER from 1 to #{@address_book.entries.count}."
+    index = gets.chomp
+    index = index.to_i
+    unless index <= @address_book.entries.count && index>0
+      puts "That is not a valid input. Please try again"
+      system "clear"
+      select_by_index
+    else
+      puts "\nHere is your requested entry. Press any key to continue:\n\n"
+      puts @address_book.entries[index-1].to_s
+      gets
+      system "clear"
+    end
+  end
   def entry_submenu(entry)
     puts "Please make your selection"
     puts "n - next entry"
@@ -92,7 +111,7 @@ require_relative '../models/address_book'
      when "n"
        return
      when "d"
-       puts "Are you sure you want to delete this entry? (Y/N)"
+       puts "\nAre you sure you want to delete this entry? (Y/N)"
        pick = gets.chomp
        if pick.downcase == "y" || pick.downcase == "yes"
          @address_book.remove_entry(entry.name, entry.phone_number, entry.email)
