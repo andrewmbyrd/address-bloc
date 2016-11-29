@@ -60,4 +60,15 @@ class AddressBook
     return nil
   end
 
+  #here we'll just start at the first entry and check that its name matches
+  #the search. If ever it does, we'll return that Entry. Else return nil
+  def iterative_search(name)
+    @entries.each do |entry|
+      if entry.name == name
+        return entry
+      end
+    end
+     nil
+  end
+
 end
