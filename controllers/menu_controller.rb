@@ -51,7 +51,7 @@ require_relative '../models/address_book'
      puts "This wizard will take you through each entry one-by-one.\n\n"
      @address_book.entries.each do |entry|
        puts entry.to_s
-       puts ""
+       puts "\n"
 
        entry_submenu(entry)
      end
@@ -75,9 +75,42 @@ require_relative '../models/address_book'
   end
 
   def search_entries
+    print "Search by entry name:"
+    name = gets.chomp
+
+    match = address_book.binary_search(name)
+    system "clear"
+
+    if match
+      puts match.to_s
+      search_submenu(match)
+    else
+      puts "No match found for #{name}"
+    end
+  #search entries end
   end
 
   def read_csv
+    print "Enter CSV file name to import:"
+    file_name = gets.chomp
+
+    if file_name.empty?
+      system "clear"
+      puts "No CSV file read"
+      main_menu
+    end
+
+    #we're trying to read a file which may or may not exist
+    #begin protects us in case an exception would be thrown
+    begin
+      entry_count = address_book.import_from_csv(file_name).count
+      system "clear"
+      puts "#{entry_count} new entries added from #{file_name}"
+    rescue
+      puts "#{file_name} is not a valid CSV file, please enter a valid CSV file name"
+      read_csv
+    end
+  #read_csv end
   end
 
   def entry_submenu(entry)
@@ -89,25 +122,13 @@ require_relative '../models/address_book'
 
     selection = gets.chomp
     case selection
-     when "n"
+    when "n"
        return
      when "d"
-       puts "Are you sure you want to delete this entry? (Y/N)"
-       pick = gets.chomp
-       if pick.downcase == "y" || pick.downcase == "yes"
-         @address_book.remove_entry(entry.name, entry.phone_number, entry.email)
-         system "clear"
-         puts "Entry deleted"
-       else
-         system "clear"
-         puts "Ok select again"
-         puts "Name: #{entry.name}"
-         puts "Phone Number: #{entry.phone_number}"
-         puts "Email: #{entry.email}"
-         puts ""
-         entry_submenu(entry)
-       end
+       delete_entry(entry)
      when "e"
+       edit_entry(entry)
+       entry_submenu(entry)
      when "m"
        system "clear"
        main_menu
@@ -115,5 +136,83 @@ require_relative '../models/address_book'
       puts "Invalid selection. Please try again"
       entry_submenu(entry)
     end
+  #end submenu
   end
+
+  def search_submenu(entry)
+    puts "\nd - delete entry"
+    puts "e - edit this entry"
+    puts "m - return to main menu"
+    # #13
+    selection = gets.chomp
+
+    # #14
+    case selection
+      when "d"
+        system "clear"
+        delete_entry(entry)
+        main_menu
+      when "e"
+        edit_entry(entry)
+        system "clear"
+        main_menu
+      when "m"
+        system "clear"
+        main_menu
+      else
+        system "clear"
+        puts "#{selection} is not a valid input"
+        puts entry.to_s
+        search_submenu(entry)
+    end
+  #end search submenu
+  end
+
+  def delete_entry(entry)
+    puts "Are you sure you want to delete this entry? (Y/N)"
+    pick = gets.chomp
+    if pick.downcase == "y" || pick.downcase == "yes"
+      @address_book.remove_entry(entry.name, entry.phone_number, entry.email)
+      system "clear"
+      puts "Entry #{entry.name} has been deleted"
+    else
+      system "clear"
+      puts "Ok select again"
+      puts "Name: #{entry.name}"
+      puts "Phone Number: #{entry.phone_number}"
+      puts "Email: #{entry.email}"
+      puts ""
+      entry_submenu(entry)
+    end
+  #delete entry end
+  end
+
+  def edit_entry(entry)
+    print "Updated name (hit enter if no change necessary):"
+    name = gets.chomp
+
+    print "Updated phone number (hit enter if no change necessary):"
+    phone_number = gets.chomp
+
+    print "Updated email (hit enter if no change necessary):"
+    email = gets.chomp
+
+    unless name == ""
+      entry.name = name
+    end
+
+    unless phone_number == ""
+      entry.phone_number = phone_number
+    end
+
+    unless email == ""
+      entry.email = email
+    end
+
+    system "clear"
+    puts "Updated entry:"
+    puts entry
+  end
+
+#end program
  end
