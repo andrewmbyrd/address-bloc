@@ -2,7 +2,9 @@ require_relative("entry")
 require "csv"
 
 class AddressBook
-  attr_reader :entries
+  #had to change this from a reader to an accessor so that you can set it to
+  # the empty array in the destroy function in menu controller
+  attr_accessor :entries
 
   def initialize
     @entries=[]

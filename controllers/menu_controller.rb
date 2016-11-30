@@ -14,7 +14,8 @@ require_relative '../models/address_book'
      puts "2 - Create an entry"
      puts "3 - Search for an entry"
      puts "4 - Import entries from a CSV"
-     puts "5 - Exit"
+     puts "5 - Destroy every record in the address book!!!11!"
+     puts "6 - Exit"
      print "Enter your selection: "
 
 
@@ -37,6 +38,10 @@ require_relative '../models/address_book'
          read_csv
          main_menu
       when 5
+        system "clear"
+        destroy
+        main_menu
+      when 6
          puts "Good-bye!"
          exit(0)
 
@@ -112,6 +117,37 @@ require_relative '../models/address_book'
     end
   #read_csv end
   end
+
+  #DESTROY every record in the address book
+  def destroy
+    #ask the user to confirm the choice
+    puts "You have selected to destroy everything. You sure??"
+    killer = gets.chomp
+
+    #ask the user to confirm the choice again because its a big deal
+    if killer.downcase == "y" || killer.downcase == "yes"
+      puts "Are you actually, really sure? (you can't get it back!)"
+      true_killer = gets.chomp
+      #if they said yes twice, then set the entries list to be empty
+      if true_killer.downcase == "y" || true_killer.downcase == "yes"
+        @address_book.entries = []
+        puts "Well. They're all gone. You monster.\n"
+        main_menu
+
+      #if they said no either time, then we can put them back to the main menu
+      else
+        puts "Well alright. Let's go back to the menu then"
+        gets
+        system "clear"
+        main_menu
+      end
+  else
+    puts "Good, I knew that must have been a mistake"
+    main_menu
+  end
+
+#end destroy
+end
 
   def entry_submenu(entry)
     puts "Please make your selection"
